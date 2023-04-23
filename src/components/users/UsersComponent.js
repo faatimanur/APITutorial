@@ -4,23 +4,35 @@ import {useState, useEffect } from 'react';
 
  function UsersComponent() {
   const [users, setUsers] = useState([]);
-  const [select, setSelect] = useState(10);
-  const getUsers=(select)=>{
-    console.log(select);
-    axios.get(`https://jsonplaceholder.typicode.com/users?_limit=${select}`).then(response=>{
+  const [select, setSelect] = useState('10');
+  const [page, setPage] = useState(1)
+  const getUsers=(page, select)=>{
+    console.log(select, 'issue');
+    axios.get(`https://jsonplaceholder.typicode.com/users?_page=${page}&_limit=${select}`).then(response=>{
     setUsers(response.data)
   })
   }
-
   const handleChange=(e)=>{
     e.preventDefault();
+    console.log(e.target.value);
     setSelect(e.target.value);
-    getUsers(e.target.value);
+    getUsers(page, e.target.value);
   }
 
   useEffect(()=>{
     getUsers()
   },[])
+
+  const increasePage=(page)=>{
+    setPage(page+1)
+    getUsers(page+1, select)
+  }
+
+  const decreasePage=(page)=>{
+    if(page !== 1){
+      setPage(page-1)}
+      getUsers(page-1, select)
+  }
 
   return (
     <div className='container'>
@@ -50,6 +62,11 @@ import {useState, useEffect } from 'react';
               }
             </tbody>
           </table>
+        </div>
+        <div className="col-md-12 text-center">
+          <button className='btn btn-danger' onClick={(()=>decreasePage(page))}>Prev</button>
+          <span className='mx-2 fs-5'>{page}</span>
+          <button className='btn btn-success' onClick={(()=>increasePage(page))}>Next</button>
         </div>
       </div>
       <div className="row">
